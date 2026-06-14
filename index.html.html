@@ -1,0 +1,73 @@
+<!DOCTYPE html>
+<html>
+<head>
+<meta charset="UTF-8">
+<title>Batak Muda</title>
+<link rel="stylesheet" href="./style.css">
+</head>
+
+<body>
+
+<div class="auth-box" id="authBox">
+
+  <div class="card">
+
+    <h1>BATAK MUDA</h1>
+
+    <input id="email" placeholder="Email">
+    <input id="password" type="password" placeholder="Password">
+
+    <button onclick="login()">LOGIN</button>
+    <button class="register" onclick="register()">REGISTER</button>
+
+  </div>
+
+</div>
+
+<!-- DASHBOARD -->
+<div id="dashboard" class="dashboard hidden">
+
+  <header>
+    <h2>Dashboard</h2>
+    <span id="roleTag"></span>
+  </header>
+
+  <div class="grid">
+
+    <div class="box">
+      <h3>Users</h3>
+      <p id="userCount">0</p>
+      <canvas id="chartUsers"></canvas>
+    </div>
+
+    <div class="box">
+      <h3>Orders</h3>
+      <p id="orderCount">0</p>
+      <canvas id="chartOrders"></canvas>
+    </div>
+
+    <div class="box">
+      <h3>Chat</h3>
+      <div id="chatBox"></div>
+
+      <input id="chatText" placeholder="chat...">
+      <button onclick="sendChat()">Send</button>
+    </div>
+
+    <div class="box">
+      <h3>Order</h3>
+      <input id="orderText" placeholder="order...">
+      <button onclick="sendOrder()">Send</button>
+    </div>
+
+  </div>
+
+  <div id="adminPanel" class="admin hidden"></div>
+
+</div>
+
+<script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+<script type="module" src="./app.js"></script>
+
+</body>
+</html>

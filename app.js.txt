@@ -1,0 +1,106 @@
+import { initializeApp } from "https://www.gstatic.com/firebasejs/10.12.0/firebase-app.js";
+import {
+getAuth,
+createUserWithEmailAndPassword,
+signInWithEmailAndPassword,
+onAuthStateChanged
+} from "https://www.gstatic.com/firebasejs/10.12.0/firebase-auth.js";
+
+import {
+getFirestore,
+collection,
+addDoc,
+onSnapshot,
+doc,
+getDoc,
+setDoc,
+updateDoc,
+serverTimestamp
+} from "https://www.gstatic.com/firebasejs/10.12.0/firebase-firestore.js";
+
+const firebaseConfig = {
+apiKey: "YOUR_API_KEY",
+authDomain: "batak-muda-ece09.firebaseapp.com",
+projectId: "batak-muda-ece09"
+};
+
+const app = initializeApp(firebaseConfig);
+const auth = getAuth(app);
+const db = getFirestore(app);
+
+let currentUser = null;
+
+// LOGIN
+window.login = async () => {
+let email = document.getElementById("email").value;
+let pass = document.getElementById("password").value;
+
+await signInWithEmailAndPassword(auth,email,pass);
+};
+
+// REGISTER
+window.register = async () => {
+let email = document.getElementById("email").value;
+let pass = document.getElementById("password").value;
+
+let user = await createUserWithEmailAndPassword(auth,email,pass);
+
+await setDoc(doc(db,"users",user.user.uid),{
+uid:user.user.uid,
+email,
+role:"user"
+});
+};
+
+// AUTH
+onAuthStateChanged(auth, async (user)=>{
+if(!user) return;
+
+currentUser = user;
+
+document.getElementById("authBox").style.display="none";
+document.getElementById("dashboard").classList.remove("hidden");
+
+let snap = await getDoc(doc(db,"users",user.uid));
+let role = snap.exists()?snap.data().role:"user";
+
+document.getElementById("roleTag").innerText = role;
+
+loadChat();
+loadOrders();
+});
+
+// CHAT
+window.sendChat = async () => {
+await addDoc(collection(db,"chats"),{
+user:currentUser.email,
+text:document.getElementById("chatText").value
+});
+};
+
+function loadChat(){
+onSnapshot(collection(db,"chats"),snap=>{
+let box=document.getElementById("chatBox");
+box.innerHTML="";
+snap.forEach(d=>{
+box.innerHTML+=`<p>${d.data().user}: ${d.data().text}</p>`;
+});
+});
+}
+
+// ORDER
+window.sendOrder = async () => {
+await addDoc(collection(db,"orders"),{
+user:currentUser.email,
+text:document.getElementById("orderText").value,
+status:"pending"
+});
+};
+
+function loadOrders(){
+onSnapshot(collection(db,"orders"),snap=>{
+document.getElementById("orderCount").innerText=snap.size;
+});
+}
+
+console.log("SYSTEM READY");
